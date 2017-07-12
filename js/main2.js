@@ -74,8 +74,14 @@ function initMap() {
   mapTypeControl: false
   });
 
-  // These are the real estate listings that will be shown to the user.
-  // Normally we'd have these in a database instead.
+  ko.applyBindings(new AppViewModel());
+}
+
+
+//Knockout's View Model
+var AppViewModel = function () {
+  var self = this;
+  // These are the lakes in the park that will be shown to the user.
   var locations = [
     {title: 'North Tea Lake', location: {lat: 45.940549, lng: -79.05746529999999}},
     {title: 'Rain Lake', location: {lat: 45.6307057, lng: -78.9176213}},
@@ -85,48 +91,59 @@ function initMap() {
     {title: 'Ragged Lake', location: {lat: 45.4602896, lng: -78.655622}}
     ];
 
-  var largeInfowindow = new google.maps.InfoWindow();
 
-  // Style the markers a bit. This will be our listing marker icon.
-  var defaultIcon = makeMarkerIcon('eeaaaa');
-
-  // Create a "highlighted location" marker color for when the user
-  // mouses over the marker.
-  var highlightedIcon = makeMarkerIcon('FFFF24');
-
-  var largeInfowindow = new google.maps.InfoWindow();
-  // The following group uses the location array to create an array of markers on initialize.
-  for (var i = 0; i < locations.length; i++) {
-  // Get the position from the location array.
-  var position = locations[i].location;
-  var title = locations[i].title;
-  // Create a marker per location, and put into markers array.
-  var marker = new google.maps.Marker({
-    position: position,
-    title: title,
-    animation: google.maps.Animation.DROP,
-    icon: defaultIcon,
-    id: i
-    });
-  // Push the marker to our array of markers.
-  markers.push(marker);
-  // Create an onclick event to open the large infowindow at each marker.
-  marker.addListener('click', function() {
-  populateInfoWindow(this, largeInfowindow);
-  });
-  // Two event listeners - one for mouseover, one for mouseout,
-  // to change the colors back and forth.
-  marker.addListener('mouseover', function() {
-    this.setIcon(highlightedIcon);
-  });
-  marker.addListener('mouseout', function() {
-    this.setIcon(defaultIcon);
-  });
+  function initialize() {
+     fetchLakes();
   }
 
-  document.getElementById('show-listings').addEventListener('click', showListings);
-  document.getElementById('hide-listings').addEventListener('click', hideListings);
-  }
+  //function to fetch cafes in New Delhi
+  function fetchLakes() {
+    locations.forEach(function(lake))
+  };
+
+
+var largeInfowindow = new google.maps.InfoWindow();
+
+// Style the markers a bit. This will be our listing marker icon.
+var defaultIcon = makeMarkerIcon('eeaaaa');
+
+// Create a "highlighted location" marker color for when the user
+// mouses over the marker.
+var highlightedIcon = makeMarkerIcon('FFFF24');
+
+var largeInfowindow = new google.maps.InfoWindow();
+// The following group uses the location array to create an array of markers on initialize.
+for (var i = 0; i < locations.length; i++) {
+// Get the position from the location array.
+var position = locations[i].location;
+var title = locations[i].title;
+// Create a marker per location, and put into markers array.
+var marker = new google.maps.Marker({
+  position: position,
+  title: title,
+  animation: google.maps.Animation.DROP,
+  icon: defaultIcon,
+  id: i
+  });
+// Push the marker to our array of markers.
+markers.push(marker);
+// Create an onclick event to open the large infowindow at each marker.
+marker.addListener('click', function() {
+populateInfoWindow(this, largeInfowindow);
+});
+// Two event listeners - one for mouseover, one for mouseout,
+// to change the colors back and forth.
+marker.addListener('mouseover', function() {
+  this.setIcon(highlightedIcon);
+});
+marker.addListener('mouseout', function() {
+  this.setIcon(defaultIcon);
+});
+}
+
+document.getElementById('show-listings').addEventListener('click', showListings);
+document.getElementById('hide-listings').addEventListener('click', hideListings);
+}
 
   // This function populates the infowindow when the marker is clicked. We'll only allow
   // one infowindow which will open at the marker that is clicked, and populate based
