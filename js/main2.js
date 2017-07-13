@@ -1,5 +1,5 @@
 var map;
-
+var currentInfoWindow=null;
 // Create a new blank array for all the listing markers.
 var markers = [];
 
@@ -156,21 +156,22 @@ var Lake = function (lake, map) {
     return markerImage;
   }
   function populateInfoWindow(marker, infowindow) {
-    var currentInfoWindow=null;
+    var infoWindowClosed = false;
     // Check to make sure the infowindow is not already opened on this marker.
     if (currentInfoWindow) {
         currentInfoWindow.close();
     }
+    currentInfoWindow = infowindow;
     if (infowindow.marker != marker) {
       infowindow.marker = marker;
       infowindow.setContent('<div>' + lake.title + '</div>');
-      currentInfoWindow = infowindow;
       console.log(currentInfoWindow);
       infowindow.open(map, marker);
 
       // Make sure the marker property is cleared if the infowindow is closed.
       infowindow.addListener('closeclick', function() {
-      infowindow.marker = null;
+        infowindow.marker = null;
+        infoWindowClosed = true;
       });
      }
     }
