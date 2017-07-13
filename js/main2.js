@@ -5,9 +5,9 @@ var markers = [];
 
 function initMap() {
 // Create a styles array to use with the map.
-	var styles = [
-    	{
-        	featureType: 'water',
+  var styles = [
+      {
+          featureType: 'water',
             stylers: [
               { color: '#19a0d8' }]
         },{
@@ -63,8 +63,8 @@ function initMap() {
             stylers: [
               { color: '#efe9e4' },
               { lightness: -25 }]
-    	}
-	];
+      }
+  ];
 
 // Constructor creates a new map - only center and zoom are required.
   map = new google.maps.Map(document.getElementById('map'), {
@@ -74,7 +74,7 @@ function initMap() {
   mapTypeControl: false
   });
 
-  ko.applyBindings(new AppViewModel());
+  appViewModel.fetchLakes();
 }
 
 
@@ -91,44 +91,101 @@ var AppViewModel = function () {
     {title: 'Ragged Lake', location: {lat: 45.4602896, lng: -78.655622}}
     ];
 
+  this.lakes = ko.observableArray();
+
 
   function initialize() {
      fetchLakes();
   }
 
   //function to fetch cafes in New Delhi
-  function fetchLakes() {
+  this.fetchLakes = function() {
     locations.forEach(function(lake){
       lake = new Lake(lake, map);
-      self.locations.push(lake);
+      self.lakes.push(lake);
     });
   };
+};
+
 
 //Lake Model
 var Lake = function (lake, map) {
+  var highlightedIcon = makeMarkerIcon('FFFF24');
   var self = this;
   var defaultIcon = makeMarkerIcon('eeaaaa');
-  self.name = ko.observable(cafe.name);
+  self.title = ko.observable(lake.title);
   self.location = lake.location;
   self.lat = self.location.lat;
   self.lng = self.location.lng;
-  return new google.maps.LatLng(self.lat, self.lng);
+  //return new google.maps.LatLng(self.lat, self.lng);
   self.formattedAddress = ko.observable(self.location.formattedAddress);
-  self.formattedPhone = ko.observable(cafe.contact.formattedPhone);
-  self.marker = (function (lake) {
-    var marker;
-    if (cafe.map_location()) {
-      marker = new google.maps.Marker({
-      position: lake.map_location(),
-                map: map,
-                icon: defaultIcon
+ // self.formattedPhone = ko.observable(lake.contact.formattedPhone);
+  self.marker = new google.maps.Marker({
+      position: lake.location,
+      map: map,
+      title: self.location.name,
+      icon: defaultIcon
       });
+
+  // Create an onclick event to open the large infowindow at each marker.
+  var infoWindowsArray = [];
+  var infowindow = new google.maps.InfoWindow();
+  google.maps.event.addDomListener(window, 'load', function() {
+    self.marker.addListener('click', function(e) {
+      var latLng = e.latLng;
+      infoWindowsArray.push(infowindow);
+      populateInfoWindow(this, infowindow);
+      centerLocation(latLng, self.marker.map);
+    });
+  });
+  // Two event listeners - one for mouseover, one for mouseout,
+  // to change the colors back and forth.
+  self.marker.addListener('mouseover', function() {
+    this.setIcon(highlightedIcon);
+  });
+  self.marker.addListener('mouseout', function() {
+    this.setIcon(defaultIcon);
+  });
+
+  function closeAllInfoWindows() {
+    for (var i=0;i<infoWindowsArray.length;i++) {
+      infoWindowsArray[i].close();
     }
-    return marker;
-    })(self);
-    self.formattedInfoWindowData = function () {
-        return '<div class="info-window-content">' +
-            '<span class="info-window-header"><h4>' + (self.name()===undefined?'Lake name not available':self.name()) +
-            '</div>';
-    };
+  }
+  
+  function makeMarkerIcon(markerColor) {
+    var markerImage = new google.maps.MarkerImage(
+    'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ markerColor +
+    '|40|_|%E2%80%A2',
+    new google.maps.Size(21, 34),
+    new google.maps.Point(0, 0),
+    new google.maps.Point(10, 34),
+    new google.maps.Size(21,34));
+    return markerImage;
+  }
+  function populateInfoWindow(marker, infowindow) {
+
+  // Check to make sure the infowindow is not already opened on this marker.
+  if (infowindow.marker != marker) {
+    closeAllInfoWindows();
+    infowindow.marker = marker;
+    infowindow.setContent('<div>' + lake.title + '</div>');
+    infowindow.open(map, marker);
+    // Make sure the marker property is cleared if the infowindow is closed.
+    infowindow.addListener('closeclick', function() {
+    infowindow.marker = null;
+    });
+   }
+  }
+  function centerLocation(data, map) {  
+  position = data.position;
+  var lng = data.lng();
+  var lat = data.lat();
+  map.setCenter(new google.maps.LatLng(lat, lng));
+  map.setZoom(11);
+  }
 };
+
+var appViewModel = new AppViewModel();
+
+ko.applyBindings(appViewModel);
