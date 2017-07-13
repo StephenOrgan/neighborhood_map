@@ -128,12 +128,10 @@ var Lake = function (lake, map) {
       });
 
   // Create an onclick event to open the large infowindow at each marker.
-  var infoWindowsArray = [];
   var infowindow = new google.maps.InfoWindow();
   google.maps.event.addDomListener(window, 'load', function() {
     self.marker.addListener('click', function(e) {
       var latLng = e.latLng;
-      infoWindowsArray.push(infowindow);
       populateInfoWindow(this, infowindow);
       centerLocation(latLng, self.marker.map);
     });
@@ -146,12 +144,6 @@ var Lake = function (lake, map) {
   self.marker.addListener('mouseout', function() {
     this.setIcon(defaultIcon);
   });
-
-  function closeAllInfoWindows() {
-    for (var i=0;i<infoWindowsArray.length;i++) {
-      infoWindowsArray[i].close();
-    }
-  }
   
   function makeMarkerIcon(markerColor) {
     var markerImage = new google.maps.MarkerImage(
@@ -164,19 +156,24 @@ var Lake = function (lake, map) {
     return markerImage;
   }
   function populateInfoWindow(marker, infowindow) {
+    var currentInfoWindow=null;
+    // Check to make sure the infowindow is not already opened on this marker.
+    if (currentInfoWindow) {
+        currentInfoWindow.close();
+    }
+    if (infowindow.marker != marker) {
+      infowindow.marker = marker;
+      infowindow.setContent('<div>' + lake.title + '</div>');
+      currentInfoWindow = infowindow;
+      console.log(currentInfoWindow);
+      infowindow.open(map, marker);
 
-  // Check to make sure the infowindow is not already opened on this marker.
-  if (infowindow.marker != marker) {
-    closeAllInfoWindows();
-    infowindow.marker = marker;
-    infowindow.setContent('<div>' + lake.title + '</div>');
-    infowindow.open(map, marker);
-    // Make sure the marker property is cleared if the infowindow is closed.
-    infowindow.addListener('closeclick', function() {
-    infowindow.marker = null;
-    });
-   }
-  }
+      // Make sure the marker property is cleared if the infowindow is closed.
+      infowindow.addListener('closeclick', function() {
+      infowindow.marker = null;
+      });
+     }
+    }
   function centerLocation(data, map) {  
   position = data.position;
   var lng = data.lng();
