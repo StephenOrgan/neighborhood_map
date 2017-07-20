@@ -186,8 +186,11 @@
           // Push the marker to our array of markers.
           markers.push(marker);
           // Create an onclick event to open the large infowindow at each marker.
-          marker.addListener('click', function() {
+          marker.addListener('click', function(e) {
+            var latLng = e.latLng;
+            console.log("boobs")
             populateInfoWindow(this, largeInfowindow);
+            centerLocation(latLng, self.marker.map);
           });
           // Two event listeners - one for mouseover, one for mouseout,
           // to change the colors back and forth.
@@ -219,6 +222,17 @@
           infowindow.open(map, marker);
         }
       }
+
+
+      function centerLocation(data, map) {  
+        position = data.position;
+        var lng = data.lng();
+        var lat = data.lat();
+        map.setCenter(new google.maps.LatLng(lat, lng));
+        map.setZoom(11);
+      }
+
+
 
       // This function will loop through the markers array and display them all.
       function showListings() {
