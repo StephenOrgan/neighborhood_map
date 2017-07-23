@@ -392,6 +392,7 @@ var Lake = function(lake, map) {
         position: lake.location,
         map: map,
         title: lake.title,
+        animation: google.maps.Animation.DROP,
         icon: defaultIcon,
         id: lake.id
     });
