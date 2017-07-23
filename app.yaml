@@ -1,0 +1,44 @@
+runtime: java8
+api_version: 1
+
+handlers:
+- url: /css
+  static_dir: css
+
+- url: /(.*\.html)
+  mime_type: text/html
+  static_files: static/\1
+  upload: static/(.*\.html)
+
+- url: /js
+  static_dir: js
+
+- url: /(.*\.txt)
+  mime_type: text/plain
+  static_files: static/\1
+  upload: static/(.*\.txt)
+
+- url: /(.*\.xml)
+  mime_type: application/xml
+  static_files: static/\1
+  upload: static/(.*\.xml)
+
+# image files
+- url: /(.*\.(bmp|gif|ico|jpeg|jpg|png))
+  static_files: static/\1
+  upload: static/(.*\.(bmp|gif|ico|jpeg|jpg|png))
+
+# index files
+- url: /(.+)/
+  static_files: static/\1/index.html
+  upload: static/(.+)/index.html
+
+# redirect to 'url + /index.html' url.
+- url: /(.+)
+  static_files: static/redirector.html
+  upload: static/redirector.html
+
+# site root
+- url: /
+  static_files: index.html
+  upload: index.html

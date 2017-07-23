@@ -36,7 +36,7 @@
         </form>
             <ul id="search" data-bind="foreach: filteredLakeList">
                 <!--<a href="#" data-bind="attr: {id: id}" id="nav">-->
-                    <li class="nav" data-bind="text: title, event: { mouseover: $parent.enableDetails, mouseout: $parent.disableDetails }, click: $parent.lakeClick"></li>
+                    <li class="nav" data-bind="text: title, attr: {id: id}, css: id, event: { mouseover: $parent.enableDetails, mouseout: $parent.disableDetails }, click: $parent.lakeClick"></li>
 
                 <!--</a>-->
             </ul>

@@ -167,7 +167,7 @@ function initMap() {
 
   // Constructor creates a new map - only center and zoom are required.
   var defaultIcon = makeMarkerIcon('FFFFFF');
-  
+
   map = new google.maps.Map(document.getElementById('map'), {
     center: {
       lat: 45.7071591,
@@ -197,7 +197,7 @@ function populateInfoWindow(marker, photos) {
   photo_content += '</div></div>';
   //photos.forEach.call.log(i)
   //
-  infoWindow.setContent('<div>' + marker.title + '</div>' +  photo_content);
+  infoWindow.setContent('<div class="marker-title">' + marker.title + '</div>' +  photo_content);
   infoWindow.open(map, marker);
   $(".slider").slick({
     slidesToShow: 1,
@@ -262,9 +262,8 @@ var AppViewModel = function() {
 
   //function to handle clicks on the sidebar
   self.lakeClick = function(lake) {
-    console.log("funtimes");
+    console.log(lake);
     new google.maps.event.trigger(lake.marker, 'click' );
-
   }
   
   self.enableDetails = function(lake) {
@@ -321,6 +320,7 @@ var Lake = function(lake, map) {
   var highlightedIcon = makeMarkerIcon('eeaaaa');
   var self = this;
   //self.photos = ko.observableArray();
+  self.id = ko.observable(lake.id);
   self.title = ko.observable(lake.title);
   self.location = lake.location;
   self.lat = self.location.lat;
@@ -332,20 +332,29 @@ var Lake = function(lake, map) {
     position: lake.location,
     map: map,
     title: lake.title,
-    icon: defaultIcon
+    icon: defaultIcon,
+    id: lake.id
   });
 
   //change icons on mouseover and mouseout
   self.marker.addListener('mouseover', function() {
     this.setIcon(highlightedIcon);
+
+    $('#'+this.id).css('background-color','teal');
+    $('#'+this.id).css('color','white');
+
+
   });
   self.marker.addListener('mouseout', function() {
-            this.setIcon(defaultIcon);
+    this.setIcon(defaultIcon);
+
+    $('#'+this.id).css('background-color','white');
+    $('#'+this.id).css('color','#6b5c5c');
   });
 
   self.marker.addListener('click', function(e) {
     self.photos = [];
-    var latLng = e.latLng;
+    var latLng = this.position;
     getFlickr(latLng, self.marker);
     populateInfoWindow(this, self.photos);
     centerLocation(latLng, self.marker.map);
