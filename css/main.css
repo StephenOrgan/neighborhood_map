@@ -35,7 +35,7 @@ li {
   cursor: pointer;
 }
 
-#search li:hover {
+#search li[id^="loc"]:hover {
   background-color: teal;
   color: white;
   padding-left: 13px;
