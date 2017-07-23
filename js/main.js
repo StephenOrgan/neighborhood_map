@@ -168,23 +168,25 @@ function initMap() {
     // Constructor creates a new map - only center and zoom are required.
     var defaultIcon = makeMarkerIcon('FFFFFF');
     var windowWidth = $(window).width();
-    var zoom_set = ''
+    var zoom_set = 10
 
-    if (windowWidth<=1040) {
+    if (windowWidth<=780) {
         zoom_set = 9;
         $('#search').css("display", "none");
-    } else if(windowWidth <=1440){
+    } else if(windowWidth > 781 && windowWidth < 1440) {
         zoom_set = 9;
-        $('#search').css("display", "block");
-    } else if(windowWidth > 1440) {
-        zoom_set = 10
+    } else if(windowWidth >= 1441) {
+        zoom_set = 10;
+    }
+    
+    if(windowWidth >=781){
         $('#search').css("display", "block");
     }
 
     map = new google.maps.Map(document.getElementById('map'), {
         center: {
-            lat: 45.7071591,
-            lng: -78.4
+            lat: 45.7733167,
+            lng: -78.682062
         },
         zoom: zoom_set,
         styles: styles,
@@ -199,25 +201,25 @@ function initMap() {
     //when window resize conditionals are met
 function resetMap() {
     var windowWidth = $(window).width();
-    if(windowWidth <=1040) {
+    if(windowWidth <=780) {
         map.setZoom(9);
         map.setCenter({
-            lat: 45.7095,
-            lng:-78.531
+            lat: 45.7733167,
+            lng:-78.682062
         });
         $('#search').css("display", "none");
     } else if(windowWidth <=1440) {
         map.setZoom(9);
         map.setCenter({
-            lat: 45.70,
-            lng:-78.531
+            lat: 45.7733167,
+            lng:-78.682062
         });
         $('#search').css("display", "block");
     } else if(windowWidth > 1440) {
         map.setZoom(10);
         map.setCenter({
-            lat: 45.70,
-            lng:-78.531
+            lat: 45.7733167,
+            lng:-78.682062
         });   
         $('#search').css("display", "block");
     }
@@ -234,7 +236,7 @@ function populateInfoWindow(marker, photos) {
     //flickr shit
     console.log(photos);
     len = photos.length;
-    photo_content = '';
+    photo_content = '<div class="flickr-error"></div>';
     photo_content += '<div class="slider-wrap"><div class="slider" data-slick=' + '\'{"slidesToShow": 1, "slidesToScroll": 1}\'>';
 
     for (var i = 0; i < len; i++) {
@@ -258,6 +260,14 @@ function populateInfoWindow(marker, photos) {
     
 
 }
+
+// function to bounce the marker
+function toggleBounce(marker) {
+        
+          marker.setAnimation(google.maps.Animation.BOUNCE);
+          setTimeout(function(){ marker.setAnimation(null); }, 750);
+        
+      }
 
 //center and zoom around a lat and long
 function centerLocation(data, map) {
@@ -320,8 +330,10 @@ var AppViewModel = function() {
     //function to mouseovers element on sidebar
     self.enableDetails = function(lake) {
         //console.log(lake.marker);
+     toggleBounce(lake.marker);
      icon = makeMarkerIcon('eeaaaa');
      lake.marker.setIcon(icon);
+     
     }
 
     //function to handle when mouse leaves element on sidebar
@@ -427,7 +439,10 @@ var Lake = function(lake, map) {
         $.getJSON(flickrUrl, function(data) {
         })
         .fail(function(e){
-                console.log(e);
+            console.log(e);
+            $('.flickr-error').text('Flickr failed to return images, please try again later');
+            $('.slider-wrap').css('height','10vh')
+            $('.slider-wrap').css('width','30vh')
         })
         .done(function(photoarray) {
             data = photoarray.photos.photo;
