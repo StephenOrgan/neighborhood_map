@@ -348,8 +348,8 @@ var Lake = function(lake, map) {
   self.marker.addListener('mouseout', function() {
     this.setIcon(defaultIcon);
 
-    $('#'+this.id).css('background-color','white');
-    $('#'+this.id).css('color','#6b5c5c');
+    $('#'+this.id).css('background-color','');
+    $('#'+this.id).css('color','');
   });
 
   self.marker.addListener('click', function(e) {
