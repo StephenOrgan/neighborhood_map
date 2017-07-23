@@ -4,6 +4,7 @@ var infoWindow;
 // Create a new blank array for all the listing markers.
 var markers = [];
 var locations = [{
+    id: "loc1",
     title: 'North Tea Lake',
     location: {
       lat: 45.940549,
@@ -11,6 +12,7 @@ var locations = [{
     }
   },
   {
+    id: "loc2",
     title: 'Rain Lake',
     location: {
       lat: 45.6307057,
@@ -18,6 +20,23 @@ var locations = [{
     }
   },
   {
+    id: "loc3",
+    title: 'Canoe Lake',
+    location: {
+      lat: 45.5535,
+      lng: -78.7171
+    }
+  },
+  {
+    id: "loc4",
+    title: 'Daisy Lake',
+    location: {
+      lat: 45.655630,
+      lng: -78.957200
+    }
+  },
+  {
+    id: "loc5",
     title: 'McRaney Lake',
     location: {
       lat: 45.5667159,
@@ -25,6 +44,7 @@ var locations = [{
     }
   },
   {
+    id: "loc6",
     title: 'Rock Lake',
     location: {
       lat: 45.52510041970849,
@@ -32,6 +52,15 @@ var locations = [{
     }
   },
   {
+    id: "loc7",
+    title: 'Big Porcupine Lake',
+    location: {
+      lat: 45.4509,
+      lng: -78.6214
+    }
+  },
+  {
+    id: "loc8",
     title: 'Louisa Lake',
     location: {
       lat: 45.4638547,
@@ -39,6 +68,7 @@ var locations = [{
     }
   },
   {
+    id: "loc9",
     title: 'Ragged Lake',
     location: {
       lat: 45.4602896,
@@ -121,7 +151,7 @@ function initMap() {
     featureType: 'poi.park',
     elementType: 'geometry',
     stylers: [{
-      color: '#adff2f'
+      color: '#BCED91'
     }]
   }, {
     featureType: 'road.highway',
@@ -136,12 +166,12 @@ function initMap() {
   }];
 
   // Constructor creates a new map - only center and zoom are required.
-  var defaultIcon = makeMarkerIcon('eeaaaa');
-  //var highlightedIcon = makeMarkerIcon('FFFF24');
+  var defaultIcon = makeMarkerIcon('FFFFFF');
+  
   map = new google.maps.Map(document.getElementById('map'), {
     center: {
-      lat: 45.8371591,
-      lng: -78.3791239
+      lat: 45.7071591,
+      lng: -78.6
     },
     zoom: 10,
     styles: styles,
@@ -158,17 +188,27 @@ function populateInfoWindow(marker, photos) {
   console.log(photos);
   len = photos.length;
   photo_content = '';
-  photo_content += '<div style = "width:450px;height:150px;"><ul id="mySlider">'
-  //console.log(len);
+  photo_content += '<div class="slider-wrap"><div class="slider" data-slick=' + '\'{"slidesToShow": 1, "slidesToScroll": 1}\'>';
+
   for (var i = 0; i < len; i++) {
-        var url = "https://farm" + photos[i].farm + ".staticflickr.com/" + photos[i].server + '/' + photos[i].id + '_' + photos[i].secret + '.jpg';
-        photo_content += '<li><img src=' + url + '></li>'
+        var url = "https://farm" + photos[i].farm + ".staticflickr.com/" + photos[i].server + '/' + photos[i].id + '_' + photos[i].secret + '_z.jpg';
+        photo_content += '<div class="slide"><img class="flickr_photo" src=' + url + '></div>'
       }
-  photo_content += '</ul></div>';
+  photo_content += '</div></div>';
   //photos.forEach.call.log(i)
   //
   infoWindow.setContent('<div>' + marker.title + '</div>' +  photo_content);
   infoWindow.open(map, marker);
+  $(".slider").slick({
+    slidesToShow: 1,
+    speed: 1000,
+    autoplay: true,
+    dots: true,
+    slidesToScroll: 10,
+    autoplay: false,
+    arrows:false
+  });
+  
 
 }
 
@@ -193,60 +233,64 @@ function makeMarkerIcon(markerColor) {
 
 //Knockout's View Model
 var AppViewModel = function() {
-
   var self = this;
 
   self.lakes = ko.observableArray();
   self.filteredLakeList = ko.observableArray([]);
 
 
+
+
   function initialize() {
     fetchLakes();
-
-    google.maps.event.addListener(infowindow, 'domready', function(){
-    // initiate slider here
-      $('#mySlider').anythingSlider({
-        mode                : 'f',   // fade mode - new in v1.8!
-        resizeContents      : false, // If true, solitary images/objects in the panel will expand to fit the viewport
-        expand              : true,
-        navigationSize      : 3,     // Set this to the maximum number of visible navigation tabs; false to disable
-
-        onSlideBegin: function(e,slider) {
-            // keep the current navigation tab in view
-            slider.navWindow( slider.targetPage );
-        }
-      });
-  }); 
-
-
-
-}
+  }
 
   //function to fetch lakes in Algonqin Park
   this.fetchLakes = function() {
     locations.forEach(function(lake) {
       lake = new Lake(lake, map);
       self.lakes.push(lake);
+      self.filteredLakeList.push(lake);
     });
   };
 
   //function to filter lakes in Algonquin
   self.filterLakes = function() {
-  // Set the filtered brewery list to an empty array
-  self.filteredLakeList([]);
+    self.filteredLakeList([]);
+    
+  };
 
-    // Get the search string and the length of the original brewery list
-    var searchString = $('#search-str').val().toLowerCase();
+  //function to handle clicks on the sidebar
+  self.lakeClick = function(lake) {
+    console.log("funtimes");
+    new google.maps.event.trigger(lake.marker, 'click' );
+
+  }
+  
+  self.enableDetails = function(lake) {
+    //console.log(lake.marker);
+   icon = makeMarkerIcon('eeaaaa');
+   lake.marker.setIcon(icon);
+  }
+
+  self.disableDetails = function(lake) {
+   icon = makeMarkerIcon('FFFFFF');
+   lake.marker.setIcon(icon);
+  }
+
+  $('#search-str').keyup(function () {
+    console.log(self.filteredLakeList());
+    self.filteredLakeList([]);
     var len = self.lakes().length;
-
-
-    // Loop through each brewery in the brewery list
+    var searchString = $('#search-str').val().toLowerCase();
+    
+    // Loop through each lake in the lake list
     for (var i = 0; i < len; i++) {
-      // Get the current brewery name & neighborhood
+      // Get the current lake name 
       var lakeName = self.lakes()[i].title().toLowerCase();
 
-      // If the name or neighborhood match the search string,
-      // add the brewery to the filtered brewery list
+      // If the name match the search string,
+      // add the lake to the filtered lake list
       if (lakeName.indexOf(searchString) > -1) {
         var lat = self.lakes()[i].marker.position.lat();
         var lng = self.lakes()[i].marker.position.lng();
@@ -261,15 +305,20 @@ var AppViewModel = function() {
         self.lakes()[i].marker.setMap(null);
       }
     }
-  };
+  });
+  
 
+  
+
+//end of AppViewModel
 };
 
 
 
 //Lake Model
 var Lake = function(lake, map) {
-  var defaultIcon = makeMarkerIcon('eeaaaa');
+  var defaultIcon = makeMarkerIcon('FFFFFF');
+  var highlightedIcon = makeMarkerIcon('eeaaaa');
   var self = this;
   //self.photos = ko.observableArray();
   self.title = ko.observable(lake.title);
@@ -286,14 +335,23 @@ var Lake = function(lake, map) {
     icon: defaultIcon
   });
 
+  //change icons on mouseover and mouseout
+  self.marker.addListener('mouseover', function() {
+    this.setIcon(highlightedIcon);
+  });
+  self.marker.addListener('mouseout', function() {
+            this.setIcon(defaultIcon);
+  });
+
   self.marker.addListener('click', function(e) {
     self.photos = [];
     var latLng = e.latLng;
     getFlickr(latLng, self.marker);
-    
     populateInfoWindow(this, self.photos);
     centerLocation(latLng, self.marker.map);
   });
+
+
 
   
  //GET FlickrJSON
@@ -302,7 +360,7 @@ var Lake = function(lake, map) {
     var lat = latlong.lat();
     var lng = latlong.lng();
     var api_key = 'b247ddd8d2a52c3451fc07632ae89b14';
-    var flickrUrl = "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=" + api_key + "&lat=" + lat + "&lon=" + lng + "&per_page=10&page=1&sort=radius=5&radius_units=km&format=json&nojsoncallback=1";
+    var flickrUrl = "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=" + api_key + "&lat=" + lat + "&lon=" + lng + "&per_page=10&page=1&sort=radius=2&tags=algonquin&radius_units=km&format=json&nojsoncallback=1";
 
     $.getJSON(flickrUrl, function(data) {
     })
@@ -321,7 +379,6 @@ var Lake = function(lake, map) {
     });
   }
 //end
-
 };
 
 

@@ -1,6 +1,7 @@
 html,
 body {
-  font-family: Arial, sans-serif;
+  font-family: Helvetica, sans-serif;
+  color: #6b5c5c;
   height: 100%;
   margin: 0;
   padding: 0;
@@ -22,17 +23,32 @@ h1 {
   text-align: center;
 }
 
-#hide-listings,
-#show-listings {
-  width: 48%;
+ul {
+  list-style-type: none;
+  padding-left: 0px;
+}
+
+li {
+  padding-bottom: 10px;
+  padding-top: 10px;
+  padding-left: 10px;
+  cursor: pointer;
+}
+
+#search li:hover {
+  background-color: teal;
+  color: white;
+  padding-left: 13px;
+  cursor: hand;
 }
 
 #map {
   bottom:0px;
   height: 100%;
-  left: 362px;
+  left: 0px;
   position: absolute;
   right: 0px;
+  z-index: 1;
 }
 
 .options-box {
@@ -44,4 +60,61 @@ h1 {
   padding: 10px 10px 30px 10px;
   text-align: left;
   width: 340px;
+}
+
+.slider {
+  @extend .padding0;
+  @include bgcolor(#fff);
+  .slick,
+  .slick * {
+    outline: none;
+  }
+}
+
+.slick-prev:before,
+    .slick-next:before {
+        color: black;
+    }
+
+.slider-wrap {
+  height:50vh;
+}
+.slider{
+  width:500px;
+  margin:20px auto;
+  text-align: center;
+  padding:20px;
+  color:white;
+  .parent-slide{padding:15px;}
+  img{display: block;margin:auto;}
+}
+.slick-dots {
+  left:0;
+}
+.flickr_photo{
+  max-height: 370px;
+  max-width: 460px !important;
+}
+.search_container{
+  max-height: 500px;
+  position: absolute;
+  z-index: 3;
+  background-color: rgba(256,256,256,.9);
+  padding-left: 20px;
+  padding-right: 20px;
+  border: solid 4px teal;
+}
+
+.search-results{
+  max-height: 500px;
+  position: absolute;
+  z-index: 3;
+  background-color: rgba(256,256,256,.9)
+}
+
+.search-input{
+  width: 254px;
+  height: 30px;
+  font-size: 15px;
+
 }
