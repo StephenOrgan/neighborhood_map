@@ -250,13 +250,34 @@ function populateInfoWindow(marker, photos) {
     infoWindow.open(map, marker);
     $(".slider").slick({
         slidesToShow: 1,
+        centerMode: true,
         speed: 1000,
         autoplay: true,
         dots: true,
         slidesToScroll: 10,
         autoplay: false,
-        arrows:false
-    });
+        arrows:true,
+        responsive: [
+    {
+      breakpoint: 768,
+      settings: {
+        arrows: true,
+        centerMode: true,
+        centerPadding: '40px',
+        slidesToShow: 2
+      }
+    },
+    {
+      breakpoint: 480,
+      settings: {
+        arrows: true,
+        centerMode: true,
+        centerPadding: '40px',
+        slidesToShow: 2
+      }
+    }
+  ]
+});
     
 
 }
