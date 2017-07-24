@@ -170,16 +170,16 @@ function initMap() {
     var windowWidth = $(window).width();
     var zoom_set = 10
 
-    if (windowWidth<=780) {
+    if (windowWidth<=767) {
         zoom_set = 9;
         $('#search').css("display", "none");
-    } else if(windowWidth > 781 && windowWidth < 1440) {
-        zoom_set = 9;
+    } else if(windowWidth >=1080 && windowWidth <=1440) {
+        zoom_set = 10;
     } else if(windowWidth >= 1441) {
         zoom_set = 10;
     }
     
-    if(windowWidth >=781){
+    if(windowWidth >=768){
         $('#search').css("display", "block");
     }
 
@@ -201,21 +201,21 @@ function initMap() {
     //when window resize conditionals are met
 function resetMap() {
     var windowWidth = $(window).width();
-    if(windowWidth <=780) {
+    if(windowWidth <=767) {
         map.setZoom(9);
         map.setCenter({
             lat: 45.7733167,
             lng:-78.682062
         });
         $('#search').css("display", "none");
-    } else if(windowWidth <=1440) {
-        map.setZoom(9);
+    } else if(windowWidth >=1080 && windowWidth <=1440) {
+        map.setZoom(10);
         map.setCenter({
             lat: 45.7733167,
             lng:-78.682062
         });
         $('#search').css("display", "block");
-    } else if(windowWidth > 1440) {
+    } else if(windowWidth > 1441) {
         map.setZoom(10);
         map.setCenter({
             lat: 45.7733167,
@@ -325,6 +325,7 @@ var AppViewModel = function() {
     self.lakeClick = function(lake) {
         console.log(lake);
         new google.maps.event.trigger(lake.marker, 'click' );
+        toggleBounce(lake.marker);
     }
     
     //function to mouseovers element on sidebar
@@ -422,6 +423,7 @@ var Lake = function(lake, map) {
         getFlickr(latLng, self.marker);
         populateInfoWindow(this, self.photos);
         centerLocation(latLng, self.marker.map);
+        toggleBounce(self.marker);
     });
 
 

@@ -77,7 +77,7 @@ li {
     }
 
 .slider-wrap {
-  height:50vh;
+  height:40vh;
 }
 .slider{
   width:500px;
@@ -92,7 +92,7 @@ li {
   left:0;
 }
 .flickr_photo{
-  max-height: 370px;
+  max-height: 315px;
   max-width: 460px !important;
   text-align: center;
   margin-left: auto;
@@ -133,4 +133,24 @@ li {
   margin-top: 2rem;
   text-align: center;
   font-size: 16px;
+}
+
+.slick-active {
+    
+}
+
+@media only screen and (max-width: 768px){
+  .slider-wrap {
+    max-height: 10vh;
+    max-width: 20vh;
+  }
+  .flickr_photo{
+    max-height: 80px;
+  }
+  .slick-active {
+    max-width: 300px !important;
+  }
+  .slider slick-initialized slick-slider slick-dotted {
+    padding-top: 0px;
+  }
 }
