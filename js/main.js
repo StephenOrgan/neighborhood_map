@@ -263,8 +263,10 @@ function populateInfoWindow(marker, photos) {
       settings: {
         arrows: true,
         centerMode: true,
-        centerPadding: '40px',
-        slidesToShow: 2
+        centerPadding: '20px',
+        slidesToShow: 2,
+        dots: false,
+        adaptiveHeight: true
       }
     },
     {
@@ -272,15 +274,18 @@ function populateInfoWindow(marker, photos) {
       settings: {
         arrows: true,
         centerMode: true,
-        centerPadding: '40px',
-        slidesToShow: 2
+        centerPadding: '20px',
+        dots: false,
+        slidesToShow: 2,
+        adaptiveHeight: true
       }
     }
   ]
-});
-    
+});   
 
 }
+
+
 
 // function to bounce the marker
 function toggleBounce(marker) {
@@ -363,6 +368,23 @@ var AppViewModel = function() {
      icon = makeMarkerIcon('FFFFFF');
      lake.marker.setIcon(icon);
     }
+
+    $(".search_container").click(function () {
+
+    $search_container = $(this);
+    //getting the next element
+    $content = $search_container.next();
+    //open up the content needed - toggle the slide- if visible, slide up, if not slidedown.
+    $content.slideToggle(500, function () {
+        //execute this after slideToggle is done
+        //change text of header based on visibility of content div
+        $search_container.text(function () {
+            //change text based on condition
+            return $content.is(":visible") ? "Collapse" : "Expand";
+        });
+    });
+
+    });
 
     $('#search-str').keyup(function () {
         console.log(self.filteredLakeList());

@@ -93,9 +93,7 @@ li {
 }
 .flickr_photo{
   max-height: 315px;
-  max-width: 460px !important;
   text-align: center;
-  
 }
 .search_container{
   max-height: 500px;
@@ -146,6 +144,11 @@ li {
     left: 0px;
 }
 
+.search_container .content {
+    display: visible;
+    padding : 5px;
+}
+
 @media only screen and (max-width: 768px){
   .slider-wrap {
     max-height: 10vh;
@@ -153,9 +156,7 @@ li {
   }
   .flickr_photo{
     max-height: 80px;
-  }
-  .slick-active {
-    max-width: 300px !important;
+    max-width: 200px !important;
   }
   .slider slick-initialized slick-slider slick-dotted {
     padding-top: 0px;

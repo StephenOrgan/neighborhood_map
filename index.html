@@ -30,8 +30,9 @@
 
 
       <div id="map"></div>
-      <div id="search" class="search_container">
+      <div id="search" class="search_container"><span>Expand</span>
         <!--<h3>Filter Steve's Favourite lakes <br>at Algonquin Park:</h3> -->
+        <div class="content">
         <form id="lake-search" class="search-area" data-bind="submit: filterLakes">
           <input type="input" name="search-string" id="search-str" class="search-input" autocomplete="off" placeholder=" search a lake">
         </form>
@@ -41,6 +42,7 @@
 
                 <!--</a>-->
             </ul>
+        </div>
         </div>
     </div>
     <script src="js/main.js"></script>
