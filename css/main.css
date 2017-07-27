@@ -149,16 +149,33 @@ li {
     padding : 5px;
 }
 
+#search_toggle {
+  text-align: center;
+  cursor: pointer;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
 @media only screen and (max-width: 768px){
   .slider-wrap {
-    max-height: 10vh;
+    max-height: 14vh;
     max-width: 20vh;
   }
   .flickr_photo{
-    max-height: 80px;
-    max-width: 200px !important;
+    max-height: 100px;
   }
-  .slider slick-initialized slick-slider slick-dotted {
-    padding-top: 0px;
+  .slider{
+  width:180px;
+  padding: 0px;
   }
+  .slick-prev {
+    left: -14px;
+  }
+  .slick-next {
+    right: -14px;
+  }
+  .search_container .content {
+    display: none;
+  }
+  
 }

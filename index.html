@@ -6,7 +6,7 @@
         <title>Neighborhood Project</title>
         <meta name="description" content="Neighborhood Project">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        
+        <link rel="stylesheet" href="css/font-awesome/css/font-awesome.min.css">
         <link rel="stylesheet" type="text/css" href="css/slick.css"/>
 <!-- Add the slick-theme.css if you want default styling -->
         <link rel="stylesheet" type="text/css" href="css/slick-theme.css"/>
@@ -21,33 +21,31 @@
          
 
 
-    </head>
+</head>
 
 
-    <body>
-    <div class="container">
-      
-
-
-      <div id="map"></div>
-      <div id="search" class="search_container"><span>Expand</span>
+<body>
+<div class="container">
+    <div id="map"></div>
+    <div id="search" class="search_container">
+        <div id="search_toggle"><span><i class="fa fa-filter" aria-hidden="true"></i>  |  <i class="fa fa-search" aria-hidden="true"></i></span></div>
         <!--<h3>Filter Steve's Favourite lakes <br>at Algonquin Park:</h3> -->
-        <div class="content">
-        <form id="lake-search" class="search-area" data-bind="submit: filterLakes">
-          <input type="input" name="search-string" id="search-str" class="search-input" autocomplete="off" placeholder=" search a lake">
-        </form>
-            <ul id="search" data-bind="foreach: filteredLakeList">
+        <div id="content" class="content">
+            <form id="lake-search" class="search-area">
+                <input type="input" name="search-string" id="search-str" class="search-input" autocomplete="off" placeholder=" search a lake" data-bind="value: search_query, valueUpdate: 'keyup'">
+            </form>
+            <ul id="search" data-bind="foreach: listOfMarkers">
                 <!--<a href="#" data-bind="attr: {id: id}" id="nav">-->
-                    <li class="nav" data-bind="text: title, attr: {id: id}, css: id, event: { mouseover: $parent.enableDetails, mouseout: $parent.disableDetails }, click: $parent.lakeClick"></li>
+                <li class="nav" data-bind="text: title, attr: {id: id}, css: id, event: { mouseover: $parent.enableDetails, mouseout: $parent.disableDetails}, click: $parent.lakeClick, hover: { classes: 'myHoverClass', leave: myLeaveHandler }"></li>
 
                 <!--</a>-->
             </ul>
         </div>
-        </div>
     </div>
+</div>
     <script src="js/main.js"></script>
-    <script async defer src=
-        "https://maps.googleapis.com/maps/api/js?libraries=geometry,drawing&key=AIzaSyAdh2832LVAzhTZksFHqrIgvIERjC_N3CY&v=3&callback=initMap">
+    <script src=
+        "https://maps.googleapis.com/maps/api/js?libraries=geometry,drawing&key=AIzaSyAdh2832LVAzhTZksFHqrIgvIERjC_N3CY&v=3&callback=initMap" async defer onerror="mappingErrorhandler()">
     </script>
        <script type="text/javascript" src="css/slick.min.js"></script>         
     </body>

@@ -77,6 +77,11 @@ var locations = [{
     }
 ];
 
+// Map error handler
+function mappingErrorhandler() {
+    alert("Could not load Google Maps");
+}
+
 function initMap() {
     // Create a styles array to use with the map.
     var styles = [{
@@ -172,7 +177,7 @@ function initMap() {
 
     if (windowWidth<=767) {
         zoom_set = 9;
-        $('#search').css("display", "none");
+        $('#search').css("display", "visible");
     } else if(windowWidth >=1080 && windowWidth <=1440) {
         zoom_set = 10;
     } else if(windowWidth >= 1441) {
@@ -180,7 +185,7 @@ function initMap() {
     }
     
     if(windowWidth >=768){
-        $('#search').css("display", "block");
+        $('#search').css("display", "visible");
     }
 
     map = new google.maps.Map(document.getElementById('map'), {
@@ -196,32 +201,41 @@ function initMap() {
     appViewModel.fetchLakes();
 
 }
+
  
 //Reset map on click handler and
     //when window resize conditionals are met
-function resetMap() {
+function resetMap(latitude, longitude) {
     var windowWidth = $(window).width();
-    if(windowWidth <=767) {
+    var lat = 45.7733167;
+    var lng = -78.682062;
+
+    if (latitude && longitude) {
+        lat = latitude
+        lng = longitude
+    }
+
+    if(windowWidth <=1079) {
         map.setZoom(9);
         map.setCenter({
-            lat: 45.7733167,
-            lng:-78.682062
+            lat: lat,
+            lng: lng
         });
-        $('#search').css("display", "none");
+        $('#search').css("display", "visible");
     } else if(windowWidth >=1080 && windowWidth <=1440) {
         map.setZoom(10);
         map.setCenter({
-            lat: 45.7733167,
-            lng:-78.682062
+            lat: lat,
+            lng: lng
         });
-        $('#search').css("display", "block");
+        $('#search').css("display", "visible");
     } else if(windowWidth > 1441) {
         map.setZoom(10);
         map.setCenter({
-            lat: 45.7733167,
-            lng:-78.682062
+            lat: lat,
+            lng: lng
         });   
-        $('#search').css("display", "block");
+        $('#search').css("display", "visible");
     }
 }
 $("#reset").click(function() {
@@ -263,10 +277,10 @@ function populateInfoWindow(marker, photos) {
       settings: {
         arrows: true,
         centerMode: true,
-        centerPadding: '20px',
-        slidesToShow: 2,
-        dots: false,
-        adaptiveHeight: true
+        centerPadding: '10px',
+        autoplay: true,
+        slidesToShow: 1,
+        dots: false
       }
     },
     {
@@ -274,18 +288,16 @@ function populateInfoWindow(marker, photos) {
       settings: {
         arrows: true,
         centerMode: true,
-        centerPadding: '20px',
+        centerPadding: '10px',
+        autoplay: true,
         dots: false,
-        slidesToShow: 2,
-        adaptiveHeight: true
+        slidesToShow: 1
       }
     }
   ]
 });   
 
 }
-
-
 
 // function to bounce the marker
 function toggleBounce(marker) {
@@ -320,7 +332,7 @@ function makeMarkerIcon(markerColor) {
 //Knockout's View Model
 var AppViewModel = function() {
     var self = this;
-
+    self.search_query = ko.observable('');
     self.lakes = ko.observableArray();
     self.filteredLakeList = ko.observableArray([]);
 
@@ -341,22 +353,30 @@ var AppViewModel = function() {
         });
     };
 
-    //function to filter lakes in Algonquin
-    self.filterLakes = function() {
-        self.filteredLakeList([]);
-        
-    };
+
 
     //function to handle clicks on the sidebar
     self.lakeClick = function(lake) {
+        var windowWidth = $(window).width();
         console.log(lake);
         new google.maps.event.trigger(lake.marker, 'click' );
         toggleBounce(lake.marker);
+        if(windowWidth <=1000) {
+            $("#content").css("display", "none");
+        }
     }
     
     //function to mouseovers element on sidebar
     self.enableDetails = function(lake) {
         //console.log(lake.marker);
+     
+        if (map.getBounds().contains(lake.marker.getPosition())) {
+            // marker is within map bounds
+        } else {
+            resetMap(lake.lat, lake.lng);
+
+        }
+     infoWindow.close();
      toggleBounce(lake.marker);
      icon = makeMarkerIcon('eeaaaa');
      lake.marker.setIcon(icon);
@@ -369,69 +389,51 @@ var AppViewModel = function() {
      lake.marker.setIcon(icon);
     }
 
-    $(".search_container").click(function () {
+    
+    self.listOfMarkers = ko.computed(function () {
+        var search_query = self.search_query().toLowerCase();
+        return ko.utils.arrayFilter(self.lakes(), function (marker) {
+            var condition = marker.title().toLowerCase().indexOf(search_query) >= 0;
 
-    $search_container = $(this);
-    //getting the next element
-    $content = $search_container.next();
-    //open up the content needed - toggle the slide- if visible, slide up, if not slidedown.
-    $content.slideToggle(500, function () {
-        //execute this after slideToggle is done
-        //change text of header based on visibility of content div
-        $search_container.text(function () {
-            //change text based on condition
-            return $content.is(":visible") ? "Collapse" : "Expand";
-        });
-    });
+            if (marker.marker) {
+                //console.log(marker.marker);
+                marker.marker.setVisible(condition);
 
-    });
-
-    $('#search-str').keyup(function () {
-        console.log(self.filteredLakeList());
-        self.filteredLakeList([]);
-        var len = self.lakes().length;
-        var searchString = $('#search-str').val().toLowerCase();
-        
-        // Loop through each lake in the lake list
-        for (var i = 0; i < len; i++) {
-            // Get the current lake name 
-            var lakeName = self.lakes()[i].title().toLowerCase();
-
-            // If the name match the search string,
-            // add the lake to the filtered lake list
-            if (lakeName.indexOf(searchString) > -1) {
-                var lat = self.lakes()[i].marker.position.lat();
-                var lng = self.lakes()[i].marker.position.lng();
-                var latlng = new google.maps.LatLng(lat, lng);
-                self.filteredLakeList.push(self.lakes()[i]);
-                // Set the map property of the marker to the map
-                self.lakes()[i].marker.setMap(map);
-                centerLocation(latlng, self.lakes()[i].marker.map);
-
-            } else {
-                // Set the map property of the marker to null so it won't be visible
-                self.lakes()[i].marker.setMap(null);
             }
-        }
+            return condition;
+        });
+    }, self); 
+
+    
+
+    $("#search_toggle").click(function () {
+        $search_container = $(this);
+        //getting the next element
+        $content = $(".content");
+        
+        //open up the content needed - toggle the slide- if visible, slide up, if not slidedown.
+        $content.slideToggle(500, function () {
+
+        });
+        
     });
+
+
 };
 //end of AppViewModel
 
 
-//Lake Model
+
+//Lake Model (don't need kobservable)
 var Lake = function(lake, map) {
     var defaultIcon = makeMarkerIcon('FFFFFF');
     var highlightedIcon = makeMarkerIcon('eeaaaa');
     var self = this;
-    //self.photos = ko.observableArray();
     self.id = ko.observable(lake.id);
     self.title = ko.observable(lake.title);
     self.location = lake.location;
     self.lat = self.location.lat;
     self.lng = self.location.lng;
-    //return new google.maps.LatLng(self.lat, self.lng);
-    self.formattedAddress = ko.observable(self.location.formattedAddress);
-    // self.formattedPhone = ko.observable(lake.contact.formattedPhone);
     self.marker = new google.maps.Marker({
         position: lake.location,
         map: map,
@@ -441,9 +443,10 @@ var Lake = function(lake, map) {
         id: lake.id
     });
 
-    //change icons on mouseover and mouseout
+    //change icons on mouseover and mouseout (use knockout bindings of these)
     self.marker.addListener('mouseover', function() {
         this.setIcon(highlightedIcon);
+
 
         $('#'+this.id).css('background-color','teal');
         $('#'+this.id).css('color','white');

@@ -36,8 +36,8 @@
 
     cursor: pointer;
 
-    color: transparent;
-    border: none;
+    color: white;
+    border: solid 1px;
     outline: none;
     background: transparent;
 }
@@ -116,8 +116,7 @@
 /* Dots */
 .slick-dotted.slick-slider
 {
-    margin-bottom: 0px;
-    padding-top: 0px;
+    margin-bottom: 30px;
 }
 
 .slick-dots
