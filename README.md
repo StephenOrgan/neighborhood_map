@@ -1,4 +1,6 @@
-# Project: Neighborhood Map A single-page application featuring my favourite Lakes in Algonquin Park.  There are map markers for each favourite location, a search function to easily discover these locations, and a listview to support simple browsing of all locations. 
+# Project: 
+
+Neighborhood Map A single-page application featuring my favourite Lakes in Algonquin Park.  There are map markers for each favourite location, a search function to easily discover these locations, and a listview to support simple browsing of all locations. 
 
 There is integration with Flickr's photo search that provides additional photos that other users contributed for that location.
 
