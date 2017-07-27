@@ -7,10 +7,15 @@ There is integration with Flickr's photo search that provides additional photos 
 ## Features and libraries :
 
 Knockout.JS
+
 HTML5
+
 CSS
+
 jQuery (to handle resize of windows, hiding/showing navigation)
+
 Responsive CSS
+
 animations
 
 
