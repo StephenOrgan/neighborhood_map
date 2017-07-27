@@ -18,6 +18,8 @@ Responsive CSS
 
 animations
 
+font-awesome
+
 
 ## Demo
 
