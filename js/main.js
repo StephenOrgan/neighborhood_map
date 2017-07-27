@@ -335,7 +335,7 @@ var AppViewModel = function() {
     self.search_query = ko.observable('');
     self.lakes = ko.observableArray();
     self.filteredLakeList = ko.observableArray([]);
-
+    
 
 
 
@@ -433,7 +433,8 @@ var Lake = function(lake, map) {
     self.title = ko.observable(lake.title);
     self.location = lake.location;
     self.lat = self.location.lat;
-    self.lng = self.location.lng;
+    self.lng = self.location.lng
+    self.hover = ko.observable(false);
     self.marker = new google.maps.Marker({
         position: lake.location,
         map: map,
@@ -446,10 +447,12 @@ var Lake = function(lake, map) {
     //change icons on mouseover and mouseout (use knockout bindings of these)
     self.marker.addListener('mouseover', function() {
         this.setIcon(highlightedIcon);
+        console.log(self.id())
+        console.log(appViewModel.lakes()[self.id()])
+        appViewModel.lakes()[self.id()].hover(true);
 
-
-        $('#'+this.id).css('background-color','teal');
-        $('#'+this.id).css('color','white');
+        //$('#'+this.id).css('background-color','teal');
+        //$('#'+this.id).css('color','white');
 
 
     });
