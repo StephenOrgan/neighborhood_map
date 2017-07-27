@@ -1,10 +1,7 @@
-var map;
-var currentInfoWindow = null;
-var infoWindow;
-// Create a new blank array for all the listing markers.
-var markers = [];
+
+//list of locations in Algonquin Park, ON, Cananda
 var locations = [{
-        id: "loc1",
+        id: "0",
         title: 'North Tea Lake',
         location: {
             lat: 45.940549,
@@ -12,7 +9,7 @@ var locations = [{
         }
     },
     {
-        id: "loc2",
+        id: "1",
         title: 'Rain Lake',
         location: {
             lat: 45.6307057,
@@ -20,7 +17,7 @@ var locations = [{
         }
     },
     {
-        id: "loc3",
+        id: "2",
         title: 'Canoe Lake',
         location: {
             lat: 45.5535,
@@ -28,7 +25,7 @@ var locations = [{
         }
     },
     {
-        id: "loc4",
+        id: "3",
         title: 'Daisy Lake',
         location: {
             lat: 45.655630,
@@ -36,7 +33,7 @@ var locations = [{
         }
     },
     {
-        id: "loc5",
+        id: "4",
         title: 'McRaney Lake',
         location: {
             lat: 45.5667159,
@@ -44,7 +41,7 @@ var locations = [{
         }
     },
     {
-        id: "loc6",
+        id: "5",
         title: 'Rock Lake',
         location: {
             lat: 45.52510041970849,
@@ -52,7 +49,7 @@ var locations = [{
         }
     },
     {
-        id: "loc7",
+        id: "6",
         title: 'Big Porcupine Lake',
         location: {
             lat: 45.4509,
@@ -60,7 +57,7 @@ var locations = [{
         }
     },
     {
-        id: "loc8",
+        id: "7",
         title: 'Louisa Lake',
         location: {
             lat: 45.4638547,
@@ -68,7 +65,7 @@ var locations = [{
         }
     },
     {
-        id: "loc9",
+        id: "8",
         title: 'Ragged Lake',
         location: {
             lat: 45.4602896,
@@ -170,24 +167,19 @@ function initMap() {
         ]
     }];
 
-    // Constructor creates a new map - only center and zoom are required.
-    var defaultIcon = makeMarkerIcon('FFFFFF');
+    // Set the appropriate zoom level as perthe window size.  
     var windowWidth = $(window).width();
     var zoom_set = 10
 
     if (windowWidth<=767) {
         zoom_set = 9;
-        $('#search').css("display", "visible");
     } else if(windowWidth >=1080 && windowWidth <=1440) {
         zoom_set = 10;
     } else if(windowWidth >= 1441) {
         zoom_set = 10;
     }
-    
-    if(windowWidth >=768){
-        $('#search').css("display", "visible");
-    }
 
+    // Generate a new map with the styles, and responsive zoom levels
     map = new google.maps.Map(document.getElementById('map'), {
         center: {
             lat: 45.7733167,
@@ -203,8 +195,8 @@ function initMap() {
 }
 
  
-//Reset map on click handler and
-    //when window resize conditionals are met
+//Reset map on when window is resized and
+//when sidebar element is mousedover and is outof bounds
 function resetMap(latitude, longitude) {
     var windowWidth = $(window).width();
     var lat = 45.7733167;
@@ -221,47 +213,46 @@ function resetMap(latitude, longitude) {
             lat: lat,
             lng: lng
         });
-        $('#search').css("display", "visible");
     } else if(windowWidth >=1080 && windowWidth <=1440) {
         map.setZoom(10);
         map.setCenter({
             lat: lat,
             lng: lng
         });
-        $('#search').css("display", "visible");
     } else if(windowWidth > 1441) {
         map.setZoom(10);
         map.setCenter({
             lat: lat,
             lng: lng
         });   
-        $('#search').css("display", "visible");
     }
 }
-$("#reset").click(function() {
-    resetMap();
-});
 $(window).resize(function() {
     resetMap();
 }); 
 
 
 function populateInfoWindow(marker, photos) {
-    //flickr shit
-    console.log(photos);
+    
     len = photos.length;
+    
+    // start of the photos slider html
     photo_content = '<div class="flickr-error"></div>';
     photo_content += '<div class="slider-wrap"><div class="slider" data-slick=' + '\'{"slidesToShow": 1, "slidesToScroll": 1}\'>';
 
+    // loop through all the photos and generate a url for each image
     for (var i = 0; i < len; i++) {
                 var url = "https://farm" + photos[i].farm + ".staticflickr.com/" + photos[i].server + '/' + photos[i].id + '_' + photos[i].secret + '_z.jpg';
                 photo_content += '<div class="slide"><img class="flickr_photo" src=' + url + '></div>'
             }
     photo_content += '</div></div>';
-    //photos.forEach.call.log(i)
-    //
+    
+    // set the content of the info window and open it on the marker
     infoWindow.setContent('<div class="marker-title">' + marker.title + '</div>' +  photo_content);
     infoWindow.open(map, marker);
+    
+    // settings for the photo carousel in the infowindow.  It's responsive
+    // based on breakpoints
     $(".slider").slick({
         slidesToShow: 1,
         centerMode: true,
@@ -334,9 +325,6 @@ var AppViewModel = function() {
     var self = this;
     self.search_query = ko.observable('');
     self.lakes = ko.observableArray();
-    self.filteredLakeList = ko.observableArray([]);
-    
-
 
 
     function initialize() {
@@ -344,12 +332,11 @@ var AppViewModel = function() {
     }
 
     //function to fetch lakes in Algonqin Park and
-    //push to lakes and filteredLakeList observable arrays.
+    //push to lakes observable array.
     this.fetchLakes = function() {
         locations.forEach(function(lake) {
             lake = new Lake(lake, map);
             self.lakes.push(lake);
-            self.filteredLakeList.push(lake);
         });
     };
 
@@ -368,10 +355,8 @@ var AppViewModel = function() {
     
     //function to mouseovers element on sidebar
     self.enableDetails = function(lake) {
-        //console.log(lake.marker);
-     
+        //if marker is outof bounds reset the map
         if (map.getBounds().contains(lake.marker.getPosition())) {
-            // marker is within map bounds
         } else {
             resetMap(lake.lat, lake.lng);
 
@@ -390,6 +375,7 @@ var AppViewModel = function() {
     }
 
     
+    //filter lakes on sidebar on keyup from user's input
     self.listOfMarkers = ko.computed(function () {
         var search_query = self.search_query().toLowerCase();
         return ko.utils.arrayFilter(self.lakes(), function (marker) {
@@ -405,13 +391,10 @@ var AppViewModel = function() {
     }, self); 
 
     
-
+    // some jquery to handle the collapsing/expansion of the sidebar.
     $("#search_toggle").click(function () {
         $search_container = $(this);
-        //getting the next element
         $content = $(".content");
-        
-        //open up the content needed - toggle the slide- if visible, slide up, if not slidedown.
         $content.slideToggle(500, function () {
 
         });
@@ -424,7 +407,7 @@ var AppViewModel = function() {
 
 
 
-//Lake Model (don't need kobservable)
+//Lake Model Constructor
 var Lake = function(lake, map) {
     var defaultIcon = makeMarkerIcon('FFFFFF');
     var highlightedIcon = makeMarkerIcon('eeaaaa');
@@ -444,23 +427,17 @@ var Lake = function(lake, map) {
         id: lake.id
     });
 
-    //change icons on mouseover and mouseout (use knockout bindings of these)
+    //change icons on mouseover and mouseout.
+    // Also highlight the element on the sidebar
     self.marker.addListener('mouseover', function() {
         this.setIcon(highlightedIcon);
-        console.log(self.id())
-        console.log(appViewModel.lakes()[self.id()])
         appViewModel.lakes()[self.id()].hover(true);
-
-        //$('#'+this.id).css('background-color','teal');
-        //$('#'+this.id).css('color','white');
 
 
     });
     self.marker.addListener('mouseout', function() {
         this.setIcon(defaultIcon);
-
-        $('#'+this.id).css('background-color','');
-        $('#'+this.id).css('color','');
+        appViewModel.lakes()[self.id()].hover(false);
     });
 
     
@@ -478,8 +455,7 @@ var Lake = function(lake, map) {
 
 
     
-    //GET FlickrJSON
-    
+    //GET FlickrJSON. If any errors, the user is shown an error in the infowindow.
     function getFlickr(latlong, marker) {
         var lat = latlong.lat();
         var lng = latlong.lng();
