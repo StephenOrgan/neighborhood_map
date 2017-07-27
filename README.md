@@ -1,4 +1,4 @@
-# Project: 
+# Project: Neighborhood Map 
 
 Neighborhood Map A single-page application featuring my favourite Lakes in Algonquin Park.  There are map markers for each favourite location, a search function to easily discover these locations, and a listview to support simple browsing of all locations. 
 
